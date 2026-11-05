@@ -1,0 +1,24 @@
+import dns from 'dns'; dns.setServers(['8.8.8.8','1.1.1.1']);
+import express from 'express'
+import dotenv from 'dotenv'
+import connectDB from './config/db.js'
+import authRouter from './routes/auth.routes.js';
+import cookieParser from 'cookie-parser';
+
+
+const app=express()
+dotenv.config()
+app.use(express.json())
+app.use(cookieParser() )
+
+app.get('/',(req,res)=>{
+    res.send('server is running')
+   
+})
+app.use('/api/auth',authRouter)
+
+app.listen(process.env.PORT||5000,()=>
+    {
+         connectDB()
+        console.log('server is running')
+    })
