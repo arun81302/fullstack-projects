@@ -7,6 +7,7 @@ await mongoose.connect(process.env.URI)
 console.log('databse connected successfully')
     }catch(err){
 console.log(err.message)
+process.exit(1)
     }
 }
 

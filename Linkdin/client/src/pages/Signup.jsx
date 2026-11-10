@@ -29,7 +29,7 @@ const Signup = () => {
             { firstName, lastName, userName, email, password },
             { withCredentials: true }
         )
-        setUserData(result.data)          // was result.data.user
+        setUserData(result.data)          
         navigate("/")
     } catch (error) {
         setErr(error.response?.data?.message || "Server not reachable. Is the backend running?")

@@ -26,6 +26,6 @@ app.use('/api/user',userRouter)
 
 app.listen(process.env.PORT||5000,()=>
     {
-         connectDB()
+        connectDB()
         console.log('server is running')
     })
