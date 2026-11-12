@@ -2,12 +2,18 @@ import genToken from "../config/token.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
-// Cookie ki settings yahan define ki hain
-const cookieOptions = {
-    httpOnly: true,
-    maxAge: 2 * 24 * 60 * 60 * 1000,
-    sameSite: "lax",
-    secure: process.env.NODE_ENVIRONMENT === "production",
+// Environment ke according cookie settings return karna
+const getCookieOptions = () => {
+    const isProduction =
+        process.env.NODE_ENV === "production" ||
+        process.env.NODE_ENVIRONMENT === "production";
+
+    return {
+        httpOnly: true,
+        maxAge: 2 * 24 * 60 * 60 * 1000,
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
+    };
 };
 
 // Naya user register karne ke liye
@@ -15,14 +21,14 @@ export const signUp = async (req, res) => {
     try {
         const { firstName, lastName, userName, email, password } = req.body;
 
-        // Check karo ki saari required fields mili hain ya nahi
+        // Required fields check karna
         if (!firstName || !lastName || !userName || !email || !password) {
             return res.status(400).json({
                 message: "All fields are required"
             });
         }
 
-        // Check karo ki email pehle se registered toh nahi hai
+        // Email already registered hai ya nahi
         const existEmail = await User.findOne({ email });
 
         if (existEmail) {
@@ -31,7 +37,7 @@ export const signUp = async (req, res) => {
             });
         }
 
-        // Check karo ki username kisi aur user ne toh nahi liya
+        // Username already registered hai ya nahi
         const existUser = await User.findOne({ userName });
 
         if (existUser) {
@@ -40,17 +46,16 @@ export const signUp = async (req, res) => {
             });
         }
 
-        // Password kam se kam 8 characters ka hona chahiye
+        // Password validation
         if (password.length < 8) {
             return res.status(400).json({
                 message: "Password must be at least 8 characters"
             });
         }
 
-        // Original password ko hash karke database mein save karo
+        // Password hash karke database mein save karna
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Database mein naya user create karo
         const user = await User.create({
             firstName,
             lastName,
@@ -59,13 +64,13 @@ export const signUp = async (req, res) => {
             password: hashedPassword,
         });
 
-        // User ID se JWT token generate karo
+        // JWT token generate karna
         const token = await genToken(user._id);
 
-        // Token ko HTTP-only cookie mein store karo
-        res.cookie("token", token, cookieOptions);
+        // Authentication cookie set karna
+        res.cookie("token", token, getCookieOptions());
 
-        // Password ko response se remove karke user data bhejo
+        // Password remove karke user data return karna
         const safeUser = await User.findById(user._id).select("-password");
 
         return res.status(201).json(safeUser);
@@ -84,7 +89,7 @@ export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Email ke through user ko database mein search karo
+        // Email se user find karna
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -93,7 +98,7 @@ export const login = async (req, res) => {
             });
         }
 
-        // Enter kiye password ko database wale hashed password se compare karo
+        // Password compare karna
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
@@ -102,13 +107,13 @@ export const login = async (req, res) => {
             });
         }
 
-        // Login successful hone par JWT token generate karo
+        // JWT token generate karna
         const token = await genToken(user._id);
 
-        // Token ko browser ki HTTP-only cookie mein save karo
-        res.cookie("token", token, cookieOptions);
+        // Authentication cookie set karna
+        res.cookie("token", token, getCookieOptions());
 
-        // Password ko response mein bhejne se pehle remove karo
+        // Password remove karke user data return karna
         const safeUser = await User.findById(user._id).select("-password");
 
         return res.status(200).json(safeUser);
@@ -122,11 +127,11 @@ export const login = async (req, res) => {
     }
 };
 
-// User ko logout karne ke liye
+// User logout karne ke liye
 export const logout = async (req, res) => {
     try {
-        // Browser se authentication cookie clear karo
-        res.clearCookie("token", cookieOptions);
+        // Browser se authentication cookie clear karna
+        res.clearCookie("token", getCookieOptions());
 
         return res.status(200).json({
             message: "Logout successful"

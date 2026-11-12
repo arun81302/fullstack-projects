@@ -12,11 +12,14 @@ import NotificationsPanel from "./NotificationsPanel";
 import UserSearch from "./UserSearch";
 
 import { CiSearch } from "react-icons/ci";
-import { IoMdArrowDropdown, IoMdClose } from "react-icons/io";
+import {
+  IoMdArrowDropdown,
+  IoMdClose,
+  IoMdHome,
+  IoMdNotifications,
+} from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { FaUserFriends, FaUserCircle } from "react-icons/fa";
-import { IoMdHome } from "react-icons/io";
-
 
 const Nav = () => {
   const { serverUrl } = useContext(authDataContext);
@@ -29,7 +32,7 @@ const Nav = () => {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Unread notifications count
+  // Unread notifications count fetch karna
   const fetchNotificationCount = useCallback(async () => {
     try {
       const result = await axios.get(
@@ -39,11 +42,11 @@ const Nav = () => {
 
       setUnreadCount(result.data.unreadCount || 0);
     } catch (err) {
-      console.log(err);
+      console.log("Notification error:", err.response?.status || err.message);
     }
   }, [serverUrl]);
 
-  // Har 10 second mein count update
+  // Har 10 second mein notification count update karna
   useEffect(() => {
     fetchNotificationCount();
 
@@ -67,7 +70,7 @@ const Nav = () => {
     }
   };
 
-  // Home page par navigate ya refresh
+  // Home page par navigate ya refresh karna
   const handleHomeClick = () => {
     setShowProfile(false);
     setShowNotifications(false);
@@ -85,7 +88,7 @@ const Nav = () => {
     });
   };
 
-  // Network page open
+  // Network page open karna
   const handleNetworkClick = () => {
     setShowProfile(false);
     setShowNotifications(false);
@@ -93,7 +96,7 @@ const Nav = () => {
     navigate("/network");
   };
 
-  // Mobile search toggle
+  // Mobile search toggle karna
   const handleMobileSearch = () => {
     setShowMobileSearch((prev) => !prev);
     setShowProfile(false);
@@ -149,9 +152,7 @@ const Nav = () => {
           className="flex h-full cursor-pointer flex-col items-center justify-center text-gray-600 hover:text-black"
         >
           <FaUserFriends size={22} />
-          <span className="hidden text-xs sm:block">
-            My Network
-          </span>
+          <span className="hidden text-xs sm:block">My Network</span>
         </button>
 
         {/* Notifications */}
@@ -210,7 +211,6 @@ const Nav = () => {
           {/* Profile Menu */}
           {showProfile && (
             <div className="absolute top-12 right-0 z-50 w-56 rounded-lg border bg-white p-3 shadow-xl">
-
               <div className="flex items-center gap-3 border-b pb-3">
                 <img
                   src={userData?.profileImage || dp}
@@ -260,7 +260,6 @@ const Nav = () => {
           <UserSearch />
         </div>
       )}
-
     </nav>
   );
 };
