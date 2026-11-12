@@ -8,7 +8,7 @@ import ConnectionButton from "../components/ConnectionButton";
 import EditProfile from "../components/EditProfile";
 
 import { authDataContext } from "../context/AuthContext";
-import { UserDataContext } from "../context/userContext";
+import { UserDataContext } from "../context/UserContext";
 
 import dp from "../assets/profile.png";
 

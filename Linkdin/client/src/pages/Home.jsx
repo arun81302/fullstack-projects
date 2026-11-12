@@ -20,7 +20,7 @@ import { IoCameraOutline } from "react-icons/io5";
 import { FiEdit } from "react-icons/fi";
 import { BsFilePost } from "react-icons/bs";
 
-import { UserDataContext } from "../context/userContext";
+import { UserDataContext } from "../context/UserContext";
 import { authDataContext } from "../context/AuthContext";
 
 const Home = () => {

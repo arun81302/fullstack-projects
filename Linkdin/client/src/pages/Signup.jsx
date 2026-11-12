@@ -3,7 +3,7 @@ import logo from "../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { authDataContext } from "../context/AuthContext";
 import axios from "axios";
-import { UserDataContext } from "../context/userContext";
+import { UserDataContext } from "../context/UserContext";
 
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { MdEmail, MdPerson, MdAlternateEmail } from "react-icons/md";
