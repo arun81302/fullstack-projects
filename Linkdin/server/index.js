@@ -1,7 +1,7 @@
-import "dotenv/config";
-
 import dns from "dns";
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
+import "dotenv/config";
 
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -17,23 +17,20 @@ import notificationRouter from "./routes/notification.routes.js";
 
 const app = express();
 
-// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(
-    cors({
-        origin: "https://fullstack-projects-2-b64y.onrender.com",
-        credentials: true,
-    })
+  cors({
+    origin: "https://fullstack-projects-2-b64y.onrender.com",
+    credentials: true,
+  })
 );
 
-// Server health check
 app.get("/", (req, res) => {
-    res.send("Server is running");
+  res.send("Server is running");
 });
 
-// API routes
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
@@ -42,7 +39,11 @@ app.use("/api/notification", notificationRouter);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    connectDB();
+app.listen(PORT, async () => {
+  try {
+    await connectDB();
     console.log(`Server is running on port ${PORT}`);
+  } catch (error) {
+    console.log("Database connection failed:", error.message);
+  }
 });
