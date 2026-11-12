@@ -8,7 +8,7 @@ import dp from "../assets/profile.png";
 import { UserDataContext } from "../context/userContext";
 import { authDataContext } from "../context/AuthContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { UNSAFE_getTurboStreamSingleFetchDataStrategy, useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const [showSearch, setShowSearch] = useState(false);
@@ -114,7 +114,7 @@ let handleSignOut=async()=>{
             className="size-9 sm:size-10 overflow-hidden rounded-full cursor-pointer"
           >
             <img
-              src={dp}
+              src={userData.profileImage || dp}
               alt="user image"
               className="w-full h-full object-cover"
             />
@@ -127,7 +127,7 @@ let handleSignOut=async()=>{
               {/* User Image */}
               <div className="size-16 overflow-hidden rounded-full">
                 <img
-                  src={dp}
+                  src={userData.profileImage || dp}
                   alt="user image"
                   className="w-full h-full object-cover"
                 />

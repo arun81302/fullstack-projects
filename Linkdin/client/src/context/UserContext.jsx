@@ -8,6 +8,7 @@ const UserContext = ({ children }) => {
 
     const [userData, setUserData] = useState(null)
     const [loading, setLoading] = useState(true)
+    let [edit,setEdit]=useState(false)
 
     const { serverUrl } = useContext(authDataContext)
 
@@ -36,7 +37,7 @@ const UserContext = ({ children }) => {
     const value = {
         userData,
         setUserData,
-        loading
+        loading,edit,setEdit
     }
 
     return (
