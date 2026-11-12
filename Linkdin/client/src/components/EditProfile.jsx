@@ -208,7 +208,7 @@ const EditProfile = () => {
   return (
     <div className="w-full h-screen fixed inset-0 z-[100] flex items-center justify-center px-3">
 
-      {/* Hidden Image Inputs */}
+    
       <input
         type="file"
         accept="image/*"
@@ -231,10 +231,10 @@ const EditProfile = () => {
         onClick={() => !loading && setEdit(false)}
       ></div>
 
-      {/* Modal Box */}
+      
       <div className="relative w-full max-w-[450px] h-[600px] max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
 
-        {/* Header */}
+    
         <div className="flex items-center justify-between border-b p-5 shrink-0">
 
           <h2 className="text-xl font-semibold text-gray-800">
@@ -255,7 +255,7 @@ const EditProfile = () => {
         
         <div className="p-5 overflow-y-auto flex-1">
 
-          {/* Cover Image */}
+        
           <div className="relative w-full h-[150px] bg-gray-200 rounded-lg overflow-hidden">
 
             {frontendCoverImage && (
@@ -266,7 +266,7 @@ const EditProfile = () => {
               />
             )}
 
-            {/* Cover Edit Icon */}
+            
             <button
               type="button"
               onClick={() => coverImage.current.click()}
@@ -277,7 +277,7 @@ const EditProfile = () => {
 
           </div>
 
-          {/* Profile Image */}
+        
           <div
             className="relative size-20 mt-[-40px] ml-5 rounded-full border-4 border-white cursor-pointer"
             onClick={() => profileImage.current.click()}
