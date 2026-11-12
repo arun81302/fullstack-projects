@@ -15,6 +15,7 @@ import { CiSearch } from "react-icons/ci";
 import { IoMdArrowDropdown, IoMdClose } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { FaUserFriends, FaUserCircle } from "react-icons/fa";
+import { IoMdHome } from "react-icons/io";
 
 
 const Nav = () => {
