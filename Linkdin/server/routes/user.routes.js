@@ -5,15 +5,18 @@ import upload from "../middlewares/multer.js";
 
 import {
   getCurrentUser,
-  updateprofile,
+  updateprofile,getUserProfile,searchUsers,getSuggestedUsers  
 } from "../controllers/user.controller.js";
 
 const userRouter = express.Router();
 
-// Get current user
-userRouter.get("/currentuser", isAuth, getCurrentUser);
 
-// Update profile
+userRouter.get("/currentuser", isAuth, getCurrentUser);
+userRouter.get("/profile/:userId", isAuth, getUserProfile);
+userRouter.get("/search", isAuth, searchUsers);
+userRouter.get("/suggestions", isAuth, getSuggestedUsers);
+
+
 userRouter.put(
   "/updateprofile",
   isAuth,

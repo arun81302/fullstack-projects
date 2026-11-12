@@ -1,19 +1,20 @@
 import { useContext, useRef, useState } from "react";
 import { UserDataContext } from "../context/userContext";
-import { IoClose } from "react-icons/io5";
-import { FaPlus } from "react-icons/fa";
-import { FiEdit2 } from "react-icons/fi";
-import dp from "../assets/profile.png";
-import axios from "axios";
 import { authDataContext } from "../context/AuthContext";
 
-const EditProfile = () => {
-  const { setEdit, userData, setUserData } =
-    useContext(UserDataContext);
+import { IoClose } from "react-icons/io5";
+import { FaPlus, FaTrash } from "react-icons/fa";
+import { FiEdit2 } from "react-icons/fi";
+import { MdDeleteOutline, MdSchool, MdWork } from "react-icons/md";
 
+import dp from "../assets/profile.png";
+import axios from "axios";
+
+const EditProfile = () => {
+  const { setEdit, userData, setUserData } = useContext(UserDataContext);
   const { serverUrl } = useContext(authDataContext);
 
-  
+  // User ki basic details ke liye states.
   const [firstName, setFirstName] = useState(userData?.firstName || "");
   const [lastName, setLastName] = useState(userData?.lastName || "");
   const [userName, setUserName] = useState(userData?.userName || "");
@@ -21,17 +22,15 @@ const EditProfile = () => {
   const [location, setLocation] = useState(userData?.location || "India");
   const [gender, setGender] = useState(userData?.gender || "");
 
-  
+  // Skills add aur remove karne ke liye states.
   const [skills, setSkills] = useState(userData?.skills || []);
   const [skillInput, setSkillInput] = useState("");
 
-  
+  // Education aur experience ki details.
   const [education, setEducation] = useState(userData?.education || []);
-
-  
   const [experience, setExperience] = useState(userData?.experience || []);
 
-  
+  // Profile aur cover image ka preview aur actual file.
   const [frontendProfileImage, setFrontendProfileImage] = useState(
     userData?.profileImage || dp
   );
@@ -44,13 +43,13 @@ const EditProfile = () => {
 
   const [backendCoverImage, setBackendCoverImage] = useState(null);
 
-  
   const [loading, setLoading] = useState(false);
 
-
+  // File input ko button click se open karne ke liye refs.
   const profileImage = useRef(null);
   const coverImage = useRef(null);
 
+  // Enter press karne par skill add ho jayegi.
   const handleAddSkill = (e) => {
     if (e.key === "Enter" && skillInput.trim()) {
       e.preventDefault();
@@ -63,12 +62,12 @@ const EditProfile = () => {
     }
   };
 
-  
+  // Selected skill ko list se hata do.
   const handleRemoveSkill = (index) => {
     setSkills(skills.filter((_, i) => i !== index));
   };
 
-  
+  // Education ka naya empty section add karo.
   const handleAddEducation = () => {
     setEducation([
       ...education,
@@ -80,7 +79,7 @@ const EditProfile = () => {
     ]);
   };
 
-  
+  // Education ke particular field ko update karo.
   const handleEducationChange = (index, field, value) => {
     const updatedEducation = [...education];
 
@@ -92,12 +91,12 @@ const EditProfile = () => {
     setEducation(updatedEducation);
   };
 
-  
+  // Education section remove karo.
   const handleRemoveEducation = (index) => {
     setEducation(education.filter((_, i) => i !== index));
   };
 
-  
+  // Experience ka naya empty section add karo.
   const handleAddExperience = () => {
     setExperience([
       ...experience,
@@ -109,7 +108,7 @@ const EditProfile = () => {
     ]);
   };
 
-  
+  // Experience ke particular field ko update karo.
   const handleExperienceChange = (index, field, value) => {
     const updatedExperience = [...experience];
 
@@ -121,32 +120,44 @@ const EditProfile = () => {
     setExperience(updatedExperience);
   };
 
-  
+  // Experience section remove karo.
   const handleRemoveExperience = (index) => {
     setExperience(experience.filter((_, i) => i !== index));
   };
 
-  
+  // Nayi profile image select karke preview dikhao.
   const handleProfileImage = (e) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid profile image.");
+      e.target.value = "";
+      return;
+    }
+
     setBackendProfileImage(file);
     setFrontendProfileImage(URL.createObjectURL(file));
   };
 
-  
+  // Nayi cover image select karke preview dikhao.
   const handleCoverImage = (e) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      alert("Please select a valid cover image.");
+      e.target.value = "";
+      return;
+    }
+
     setBackendCoverImage(file);
     setFrontendCoverImage(URL.createObjectURL(file));
   };
 
-  
+  // Saari profile details FormData ke through backend ko bhejo.
   const handleSubmit = async () => {
     if (loading) return;
 
@@ -155,7 +166,6 @@ const EditProfile = () => {
 
       const formdata = new FormData();
 
-      
       formdata.append("firstName", firstName);
       formdata.append("lastName", lastName);
       formdata.append("userName", userName);
@@ -163,22 +173,19 @@ const EditProfile = () => {
       formdata.append("location", location);
       formdata.append("gender", gender);
 
-    
+      // Arrays ko JSON string mein convert karke bhej rahe hain.
       formdata.append("skills", JSON.stringify(skills));
       formdata.append("education", JSON.stringify(education));
       formdata.append("experience", JSON.stringify(experience));
 
-      
       if (backendProfileImage) {
         formdata.append("profileImage", backendProfileImage);
       }
 
-    
       if (backendCoverImage) {
         formdata.append("coverImage", backendCoverImage);
       }
 
-      
       const result = await axios.put(
         `${serverUrl}/api/user/updateprofile`,
         formdata,
@@ -187,28 +194,28 @@ const EditProfile = () => {
         }
       );
 
-      
+      // Backend se updated user data lekar context update karo.
       setUserData(result.data.user);
 
       console.log("Profile Updated:", result.data);
 
-      
       setEdit(false);
-
     } catch (err) {
       console.log(
         "Update Profile Error:",
         err.response?.data || err.message
       );
+
+      alert(err.response?.data?.message || "Profile update nahi ho payi.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full h-screen fixed inset-0 z-[100] flex items-center justify-center px-3">
+    <div className="fixed inset-0 z-[100] flex h-screen w-full items-center justify-center px-3">
 
-    
+      {/* Hidden file inputs, button click par open honge. */}
       <input
         type="file"
         accept="image/*"
@@ -225,18 +232,16 @@ const EditProfile = () => {
         onChange={handleCoverImage}
       />
 
-      
+      {/* Background par click karne se modal close hoga. */}
       <div
         className="absolute inset-0 bg-black/40"
         onClick={() => !loading && setEdit(false)}
       ></div>
 
-      
-      <div className="relative w-full max-w-[450px] h-[600px] max-h-[90vh] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="relative flex h-[600px] max-h-[90vh] w-full max-w-[450px] flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
 
-    
-        <div className="flex items-center justify-between border-b p-5 shrink-0">
-
+        {/* Modal Header */}
+        <div className="flex shrink-0 items-center justify-between border-b p-5">
           <h2 className="text-xl font-semibold text-gray-800">
             Edit Profile
           </h2>
@@ -245,63 +250,60 @@ const EditProfile = () => {
             type="button"
             onClick={() => setEdit(false)}
             disabled={loading}
-            className="size-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer disabled:opacity-50"
+            aria-label="Close edit profile"
+            className="flex size-9 cursor-pointer items-center justify-center rounded-full transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <IoClose className="text-2xl text-gray-700" />
           </button>
-
         </div>
 
-        
-        <div className="p-5 overflow-y-auto flex-1">
+        {/* Profile form ka main scrollable section. */}
+        <div className="flex-1 overflow-y-auto p-5">
 
-        
-          <div className="relative w-full h-[150px] bg-gray-200 rounded-lg overflow-hidden">
-
+          {/* Cover Image */}
+          <div className="relative h-[150px] w-full overflow-hidden rounded-lg bg-gray-200">
             {frontendCoverImage && (
               <img
                 src={frontendCoverImage}
                 alt="Cover"
-                className="w-full h-full object-cover rounded-lg"
+                className="h-full w-full rounded-lg object-cover"
               />
             )}
 
-            
             <button
               type="button"
-              onClick={() => coverImage.current.click()}
-              className="absolute top-2 right-2 size-9 bg-white rounded-full flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-100"
+              onClick={() => coverImage.current?.click()}
+              aria-label="Change cover image"
+              className="absolute right-2 top-2 flex size-9 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition hover:bg-gray-100"
             >
-              <FiEdit2 className="text-[#0A66C2] text-lg" />
+              <FiEdit2 className="text-lg text-[#0A66C2]" />
             </button>
-
           </div>
 
-        
+          {/* Profile Image */}
           <div
-            className="relative size-20 mt-[-40px] ml-5 rounded-full border-4 border-white cursor-pointer"
-            onClick={() => profileImage.current.click()}
+            className="relative ml-5 mt-[-40px] size-20 cursor-pointer rounded-full border-4 border-white"
+            onClick={() => profileImage.current?.click()}
           >
-
             <img
               src={frontendProfileImage}
               alt="Profile"
-              className="w-full h-full object-cover rounded-full"
+              className="h-full w-full rounded-full object-cover"
             />
 
             <button
               type="button"
-              className="absolute bottom-0 right-0 size-7 bg-[#0A66C2] text-white rounded-full flex items-center justify-center shadow-md border-2 border-white cursor-pointer"
+              aria-label="Change profile image"
+              onClick={() => profileImage.current?.click()}
+              className="absolute bottom-0 right-0 flex size-7 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-[#0A66C2] text-white shadow-md"
             >
               <FaPlus className="text-xs" />
             </button>
-
           </div>
 
-        
-          <div className="w-full flex flex-col gap-4 mt-5">
+          <div className="mt-5 flex w-full flex-col gap-4">
 
-            
+            {/* First Name */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 First Name
@@ -312,11 +314,11 @@ const EditProfile = () => {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Enter first name"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
             </div>
 
-            
+            {/* Last Name */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Last Name
@@ -327,11 +329,11 @@ const EditProfile = () => {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Enter last name"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
             </div>
 
-    
+            {/* Username */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Username
@@ -342,11 +344,11 @@ const EditProfile = () => {
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 placeholder="Enter username"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
             </div>
 
-            
+            {/* Headline */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Headline
@@ -357,11 +359,11 @@ const EditProfile = () => {
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
                 placeholder="Enter headline"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
             </div>
 
-            
+            {/* Location */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Location
@@ -372,11 +374,11 @@ const EditProfile = () => {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="Enter location"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
             </div>
 
-            
+            {/* Gender */}
             <div>
               <label className="text-sm font-medium text-gray-700">
                 Gender
@@ -385,7 +387,7 @@ const EditProfile = () => {
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full cursor-pointer rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -394,9 +396,8 @@ const EditProfile = () => {
               </select>
             </div>
 
-            
+            {/* Skills Section */}
             <div>
-
               <label className="text-sm font-medium text-gray-700">
                 Skills
               </label>
@@ -407,62 +408,54 @@ const EditProfile = () => {
                 onChange={(e) => setSkillInput(e.target.value)}
                 onKeyDown={handleAddSkill}
                 placeholder="Type a skill and press Enter"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1 outline-none focus:border-[#0A66C2]"
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
               />
 
-              
-              <div className="w-full max-h-[120px] overflow-y-auto flex flex-wrap gap-2 mt-3 p-1">
-
+              {/* Added skills yahan chips ke form mein dikhenge. */}
+              <div className="mt-3 flex max-h-[120px] w-full flex-wrap gap-2 overflow-y-auto p-1">
                 {skills.map((skill, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 bg-blue-50 text-[#0A66C2] px-3 py-1 rounded-full text-sm"
+                    className="flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-sm text-[#0A66C2]"
                   >
-
                     <span>{skill}</span>
 
                     <button
                       type="button"
                       onClick={() => handleRemoveSkill(index)}
-                      className="text-gray-500 hover:text-red-500 font-bold"
+                      aria-label={`Remove ${skill}`}
+                      className="cursor-pointer text-gray-500 transition hover:text-red-500"
                     >
-                      ×
+                      <IoClose size={17} />
                     </button>
-
                   </div>
                 ))}
-
               </div>
-
             </div>
 
-            
+            {/* Education Section */}
             <div className="border-t pt-4">
-
-              <div className="flex items-center justify-between mb-3">
-
-                <h3 className="text-lg font-semibold text-gray-800">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <MdSchool className="text-xl text-[#0A66C2]" />
                   Education
                 </h3>
 
                 <button
                   type="button"
                   onClick={handleAddEducation}
-                  className="flex items-center gap-2 text-sm font-medium text-[#0A66C2] cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2 text-sm font-medium text-[#0A66C2] hover:text-blue-800"
                 >
                   <FaPlus /> Add Education
                 </button>
-
               </div>
 
               {education.map((edu, index) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg p-3 mb-3"
+                  className="mb-3 rounded-lg border border-gray-200 p-3"
                 >
-
-                  <div className="flex items-center justify-between mb-3">
-
+                  <div className="mb-3 flex items-center justify-between">
                     <h4 className="font-medium text-gray-700">
                       Education {index + 1}
                     </h4>
@@ -470,11 +463,11 @@ const EditProfile = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveEducation(index)}
-                      className="text-sm text-red-500 cursor-pointer"
+                      className="flex cursor-pointer items-center gap-1 text-sm text-red-500 hover:text-red-700"
                     >
+                      <MdDeleteOutline size={18} />
                       Remove
                     </button>
-
                   </div>
 
                   <input
@@ -484,7 +477,7 @@ const EditProfile = () => {
                       handleEducationChange(index, "college", e.target.value)
                     }
                     placeholder="College / University"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-2 outline-none focus:border-[#0A66C2]"
+                    className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
 
                   <input
@@ -494,7 +487,7 @@ const EditProfile = () => {
                       handleEducationChange(index, "degree", e.target.value)
                     }
                     placeholder="Degree (e.g. MCA, BCA)"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-2 outline-none focus:border-[#0A66C2]"
+                    className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
 
                   <input
@@ -504,41 +497,35 @@ const EditProfile = () => {
                       handleEducationChange(index, "fieldofstudy", e.target.value)
                     }
                     placeholder="Field of Study"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-[#0A66C2]"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
-
                 </div>
               ))}
-
             </div>
 
-            
+            {/* Experience Section */}
             <div className="border-t pt-4">
-
-              <div className="flex items-center justify-between mb-3">
-
-                <h3 className="text-lg font-semibold text-gray-800">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                  <MdWork className="text-xl text-[#0A66C2]" />
                   Experience
                 </h3>
 
                 <button
                   type="button"
                   onClick={handleAddExperience}
-                  className="flex items-center gap-2 text-sm font-medium text-[#0A66C2] cursor-pointer"
+                  className="flex cursor-pointer items-center gap-2 text-sm font-medium text-[#0A66C2] hover:text-blue-800"
                 >
                   <FaPlus /> Add Experience
                 </button>
-
               </div>
 
               {experience.map((exp, index) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg p-3 mb-3"
+                  className="mb-3 rounded-lg border border-gray-200 p-3"
                 >
-
-                  <div className="flex items-center justify-between mb-3">
-
+                  <div className="mb-3 flex items-center justify-between">
                     <h4 className="font-medium text-gray-700">
                       Experience {index + 1}
                     </h4>
@@ -546,11 +533,11 @@ const EditProfile = () => {
                     <button
                       type="button"
                       onClick={() => handleRemoveExperience(index)}
-                      className="text-sm text-red-500 cursor-pointer"
+                      className="flex cursor-pointer items-center gap-1 text-sm text-red-500 hover:text-red-700"
                     >
+                      <FaTrash size={13} />
                       Remove
                     </button>
-
                   </div>
 
                   <input
@@ -560,7 +547,7 @@ const EditProfile = () => {
                       handleExperienceChange(index, "title", e.target.value)
                     }
                     placeholder="Job Title"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-2 outline-none focus:border-[#0A66C2]"
+                    className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
 
                   <input
@@ -570,7 +557,7 @@ const EditProfile = () => {
                       handleExperienceChange(index, "company", e.target.value)
                     }
                     placeholder="Company Name"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 mb-2 outline-none focus:border-[#0A66C2]"
+                    className="mb-2 w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
 
                   <textarea
@@ -580,30 +567,24 @@ const EditProfile = () => {
                     }
                     placeholder="Describe your responsibilities..."
                     rows={3}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-[#0A66C2] resize-none"
+                    className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-[#0A66C2]"
                   />
-
                 </div>
               ))}
-
             </div>
 
-            
+            {/* Save button dabane par profile update hogi. */}
             <button
               type="button"
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full bg-[#0A66C2] text-white font-semibold py-3 rounded-full hover:bg-blue-700 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full cursor-pointer rounded-full bg-[#0A66C2] py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Saving..." : "Save Profile"}
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };

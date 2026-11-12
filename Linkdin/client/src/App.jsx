@@ -4,6 +4,8 @@ import Signup from "./pages/Signup"
 import Login from "./pages/Login"
 import { useContext } from "react"
 import { UserDataContext } from "./context/userContext"
+import Profile from "./pages/Profile";
+import Network from "./pages/Network";
 
 const App = () => {
 
@@ -26,6 +28,8 @@ const App = () => {
                 path="/login"
                 element={userData ? <Navigate to="/" /> : <Login />}
             />
+            <Route path="/profile/:userId" element={<Profile />} />
+<Route path="/network" element={<Network />} />
         </Routes>
     )
 }
