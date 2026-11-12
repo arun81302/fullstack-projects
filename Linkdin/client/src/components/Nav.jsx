@@ -12,7 +12,8 @@ import NotificationsPanel from "./NotificationsPanel";
 import UserSearch from "./UserSearch";
 
 import { CiSearch } from "react-icons/ci";
-import { IoMdHome, IoMdNotifications } from "react-icons/io";
+import { IoMdArrowDropdown, IoMdClose } from "react-icons/io";
+import { IoLogOutOutline } from "react-icons/io5";
 import { FaUserFriends, FaUserCircle } from "react-icons/fa";
 import {
   IoMdArrowDropdown,
