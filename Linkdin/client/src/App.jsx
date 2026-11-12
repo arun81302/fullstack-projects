@@ -3,7 +3,7 @@ import Home from "./pages/Home"
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
 import { useContext } from "react"
-import { UserDataContext } from "./context/userContext"
+import { UserDataContext } from "./context/UserContext"
 import Profile from "./pages/Profile";
 import Network from "./pages/Network";
 
