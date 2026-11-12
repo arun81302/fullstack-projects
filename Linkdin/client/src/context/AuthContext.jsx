@@ -3,7 +3,7 @@ import { createContext } from "react"
 export const authDataContext=createContext()
 
 const AuthContext = ({children}) => {
-const serverUrl="http://localhost:3000" 
+const serverUrl="https://fullstack-projects-1-wvxi.onrender.com" 
     let value={
         serverUrl
     }
