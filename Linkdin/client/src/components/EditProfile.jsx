@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from "react";
-import { UserDataContext } from "../context/userContext";
+import { UserDataContext } from "../context/UserContext";
 import { authDataContext } from "../context/AuthContext";
 
 import { IoClose } from "react-icons/io5";

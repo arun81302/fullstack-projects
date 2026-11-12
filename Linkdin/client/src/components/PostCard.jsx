@@ -4,7 +4,7 @@ import axios from "axios";
 import dp from "../assets/profile.png";
 
 import { authDataContext } from "../context/AuthContext";
-import { UserDataContext } from "../context/userContext";
+import { UserDataContext } from "../context/UserContext";
 
 import timeAgo from "../utils/timeAgo";
 import ConnectionButton from "./ConnectionButton";
