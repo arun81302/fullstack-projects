@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import {BrowserRouter} from 'react-router-dom'
 import AuthContext from './context/AuthContext'
-import UserContext from './context/userContext'
+import UserContext from './context/UserContext'
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
